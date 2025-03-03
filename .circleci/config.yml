@@ -1,0 +1,44 @@
+version: 2.1
+
+executors:
+  go-executor:
+    docker:
+      - image: circleci/golang:1.22
+    working_directory: ~/project
+
+jobs:
+  test:
+    executor: go-executor
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: go mod tidy
+      - run:
+          name: Run tests
+          command: go test -v ./... -coverprofile=coverage.out
+      - run:
+          name: Display test coverage
+          command: go tool cover -func=coverage.out
+      - run:
+          name: Upload Coverage to Codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
+  build:
+    executor: go-executor
+    steps:
+      - checkout
+      - run:
+          name: Build Go binary
+          command: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/pokemon-evolution cmd/main.go
+
+workflows:
+  version: 2
+  ci-cd:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+

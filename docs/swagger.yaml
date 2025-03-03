@@ -1,0 +1,71 @@
+basePath: /api
+definitions:
+  models.Evolution:
+    properties:
+      details:
+        items:
+          $ref: '#/definitions/models.EvolutionDetail'
+        type: array
+      evolves_to:
+        items:
+          $ref: '#/definitions/models.Evolution'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.EvolutionDetail:
+    properties:
+      happiness:
+        type: integer
+      item:
+        type: string
+      known_move:
+        type: string
+      min_level:
+        type: integer
+      trigger:
+        type: string
+    type: object
+host: localhost:5001
+info:
+  contact: {}
+  description: This is a sample Pokémon Evolution API using Golang.
+  title: Pokémon Evolution API
+  version: "1.0"
+paths:
+  /api/evolution/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get evolution details for a Pokémon by evolution chain ID.
+      parameters:
+      - description: Evolution Chain ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Evolution'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Evolution Chain
+      tags:
+      - Evolution
+swagger: "2.0"
