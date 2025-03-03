@@ -1,0 +1,108 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample Pokémon Evolution API using Golang.",
+        "title": "Pokémon Evolution API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5001",
+    "basePath": "/api",
+    "paths": {
+        "/api/evolution/{id}": {
+            "get": {
+                "description": "Get evolution details for a Pokémon by evolution chain ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Evolution"
+                ],
+                "summary": "Get Evolution Chain",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Evolution Chain ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Evolution"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Evolution": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EvolutionDetail"
+                    }
+                },
+                "evolves_to": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Evolution"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EvolutionDetail": {
+            "type": "object",
+            "properties": {
+                "happiness": {
+                    "type": "integer"
+                },
+                "item": {
+                    "type": "string"
+                },
+                "known_move": {
+                    "type": "string"
+                },
+                "min_level": {
+                    "type": "integer"
+                },
+                "trigger": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
