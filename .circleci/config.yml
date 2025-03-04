@@ -19,7 +19,7 @@ jobs:
           command: go test -v ./... -coverprofile=coverage.txt
       - run:
           name: Display test coverage
-          command: go tool cover -func=coverage.out
+          command: go tool cover -func=coverage.txt
       - run:
           name: Upload Coverage to Codecov
           command: |
