@@ -3,8 +3,8 @@ version: 2.1
 executors:
   go-executor:
     docker:
-      - image: golang:1.22
-    working_directory: ~/project
+      - image: cimg/go:1.22
+    working_directory: ~/pokemon-evolution
 
 jobs:
   test:
@@ -18,7 +18,7 @@ jobs:
           name: Run tests
           command: go test -v ./... -coverprofile=coverage.txt
       - run:
-          name: Display test coverage
+          name: Display tested coverage
           command: go tool cover -func=coverage.txt
       - run:
           name: Upload Coverage to Codecov
@@ -28,10 +28,72 @@ jobs:
   build:
     executor: go-executor
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
+      - run:
+          name: Install Docker CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get remove -y containerd containerd.io docker-ce docker-ce-cli docker.io || true
+            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
       - run:
           name: Build Go binary
           command: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/pokemon-evolution cmd/main.go
+      - run:
+          name: Build Docker Image
+          command: docker build -t pokemon-evolution .
+      - run:
+          name: Save Docker Image as Tar File
+          command: docker save -o pokemon-evolution.tar pokemon-evolution
+      - run:
+          name: Check if .tar file exists
+          command: ls -lh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - pokemon-evolution.tar
+
+  deploy:
+    executor: go-executor
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install Docker CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get remove -y containerd containerd.io docker-ce docker-ce-cli docker.io || true
+            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      - run:
+          name: Check files after attaching workspace
+          command: ls -lh
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:6phG9JfoCKelQ0zFqp8+6n5ZMZrOpHfjUR8UdXMZiHE"
+      - run:
+          name: Copy Docker Image to EC2
+          command: |
+            echo "$AWS_PRIVATE_KEY" > key.pem
+            chmod 400 key.pem
+            scp -o StrictHostKeyChecking=no -i key.pem pokemon-evolution.tar $AWS_SSH_USER@$AWS_EC2_IP:/home/$AWS_SSH_USER/
+      - run:
+          name: Run Docker Container on EC2
+          command: |
+            ssh -o StrictHostKeyChecking=no -t -i key.pem $AWS_SSH_USER@$AWS_EC2_IP \<<EOF
+              docker load -i pokemon-evolution.tar
+              docker stop pokemon-evolution || true
+              docker rm pokemon-evolution || true
+              docker run -d -p 5001:5001 --name pokemon-evolution pokemon-evolution
+              \<<EOF
 
 workflows:
   version: 2
@@ -41,4 +103,6 @@ workflows:
       - build:
           requires:
             - test
-
+      - deploy:
+          requires:
+            - build
