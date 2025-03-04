@@ -16,7 +16,7 @@ jobs:
           command: go mod tidy
       - run:
           name: Run tests
-          command: go test -v ./... -coverprofile=coverage.out
+          command: go test -v ./... -coverprofile=coverage.txt
       - run:
           name: Display test coverage
           command: go tool cover -func=coverage.out

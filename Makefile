@@ -17,7 +17,7 @@ run:
 # Run tests
 test:
 	@echo "Running tests and generating coverage..."
-	go test -v ./... -coverprofile=coverage.out
+	go test -v ./... -coverprofile=coverage.txt
 	#@echo "display tests"
     #go tool cover -func=coverage.out
 
@@ -45,7 +45,7 @@ docker-stop:
 # Clean up build files
 clean:
 	@echo "Cleaning up..."
-	rm -rf bin/$(BINARY_NAME) coverage.out
+	rm -rf bin/$(BINARY_NAME) coverage.txt
 
 
 # Deploy (Placeholder for cloud deployment)
