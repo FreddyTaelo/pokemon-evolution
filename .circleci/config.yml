@@ -3,7 +3,7 @@ version: 2.1
 executors:
   go-executor:
     docker:
-      - image: golang:1.22
+      - image: golang:1.20
     working_directory: ~/project
 
 jobs:
