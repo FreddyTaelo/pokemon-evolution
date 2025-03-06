@@ -92,7 +92,7 @@ jobs:
               docker load -i pokemon-evolution.tar
               docker stop pokemon-evolution || true
               docker rm pokemon-evolution || true
-              docker run -d -p 5001:5001 --name pokemon-evolution pokemon-evolution
+              docker run -d -p --restart unless-stopped 5001:5001 --name pokemon-evolution pokemon-evolution
               \<<EOF
 
 workflows:

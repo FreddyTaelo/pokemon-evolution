@@ -6,6 +6,9 @@ pokemon evolution ms
 
 # Sample API CAll
 ```
+Swagger
+curl http://ec2-13-60-74-36.eu-north-1.compute.amazonaws.com:5001/swagger/index.html
+
 Request ( Get pokemon evolution by ID)
 
 curl http://ec2-13-60-74-36.eu-north-1.compute.amazonaws.com:5001/api/evolution/1

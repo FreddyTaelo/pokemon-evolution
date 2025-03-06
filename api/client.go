@@ -7,7 +7,7 @@ import (
 )
 
 var client = &http.Client{
-	Timeout: 10 * time.Second, // 🟢 Timeout for HTTP requests
+	Timeout: 10 * time.Second,
 }
 
 func GetClient() *http.Client {
