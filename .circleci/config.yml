@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Upload Coverage to Codecov
           command: |
-            bash <(curl -s https://codecov.io/bash)
+            bash <(curl -s https://codecov.io/bash) -t ace145f9-ce03-4c99-a52e-89ccf0eb6439 -r FreddyTaelo/pokemon-evolution
 
   build:
     executor: go-executor
