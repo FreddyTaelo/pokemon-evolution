@@ -48,16 +48,13 @@ clean:
 	rm -rf bin/$(BINARY_NAME) coverage.txt
 
 
-# Deploy (Placeholder for cloud deployment)
-#deploy:
-#@echo "Deploying the solution..."
-
-
 # List available commands
 help:
 	@echo "Available commands:"
 	@echo "  make build          - Build the Go binary"
 	@echo "  make run            - Run the application locally"
+	@echo "  make test           - Run the application tests and generate coverage"
+	@echo "  make swag           - Generate swagger docs"
 	@echo "  make docker-build   - Build the Docker image"
 	@echo "  make docker-run     - Run the container"
 	@echo "  make docker-stop    - Stop and remove the container"
