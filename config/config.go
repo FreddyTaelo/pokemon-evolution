@@ -21,7 +21,7 @@ func LoadConfig() *Config {
 
 	return &Config{
 		PokeAPIURL: getEnv("POKEAPI_URL", "https://pokeapi.co/api/v2"),
-		Port:       getEnv("PORT", "5000"),
+		Port:       getEnv("PORT", "5001"),
 		Address:    getEnv("ADDR", "0.0.0.0"),
 	}
 } /*LoadConfig()*/
